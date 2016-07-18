@@ -4,23 +4,23 @@ package calisthenics.todolist;
  * write a CLI which enables you to deal with a todo list
  * <h2>rules</h2>
  * <ol>
- *     <li>Only One Level Of Indentation Per Method</li>
- *     <li>
- Don’t Use The ELSE Keyword</li>
- *     <li>
- Wrap All Primitives And Strings</li>
- *     <li>
- First Class Collections</li>
- *     <li>
- One Dot Per Line</li>
- *     <li>
- Don’t Abbreviate</li>
- *     <li>
- Keep All Entities Small</li>
- *     <li>
- No Classes With More Than Two Instance Variables</li>
- *     <li>
- No Getters/Setters/Properties</li>
+ * <li>Only One Level Of Indentation Per Method</li>
+ * <li>
+ * Don’t Use The ELSE Keyword</li>
+ * <li>
+ * Wrap All Primitives And Strings</li>
+ * <li>
+ * First Class Collections</li>
+ * <li>
+ * One Dot Per Line</li>
+ * <li>
+ * Don’t Abbreviate</li>
+ * <li>
+ * Keep All Entities Small</li>
+ * <li>
+ * No Classes With More Than Two Instance Variables</li>
+ * <li>
+ * No Getters/Setters/Properties</li>
  * </ol>
  * <h2>US</h2>
  * <h3>Core User Stories</h3>
@@ -40,33 +40,35 @@ package calisthenics.todolist;
 public class Main {
 
     public static final String CREATE_TODO_LIST = "create";
+    private TodoList todoList;
 
     public static void main(String[] args) {
         Main main = new Main();
         main.runTodoListProgram();
     }
 
-    public void runTodoListProgram(){
+    private void runTodoListProgram() {
         UserInputService.log("state your command");
         TodoList todoList = null;
-        while(true){
-
+        while (true) {
             String command = UserInputService.readUserInput();
-            if (CREATE_TODO_LIST.equals(command)){
-                Task testTask = new Task("test");
-                Task[] tasks = new Task[1];
-                tasks[0]=testTask;
-                todoList = new TodoList(tasks);
-            }else{
-                UserInputService.log("unknown command");
-            }
-            if (todoList!=null){
-                UserInputService.log(todoList.toString());
-            }
+            final String userCommandOutput = executeUserCommand(command);
+            UserInputService.log(userCommandOutput);
+
         }
-
-
     }
 
+    public String executeUserCommand(String command) {
+        if (CREATE_TODO_LIST.equals(command)) {
+            Task testTask = new Task("test");
+            Task[] tasks = new Task[1];
+            tasks[0] = testTask;
+            todoList = new TodoList(tasks);
+
+            return todoList.toString();
+        }
+
+        return "unknown command";
+    }
 
 }
