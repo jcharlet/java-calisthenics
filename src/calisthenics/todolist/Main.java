@@ -1,6 +1,8 @@
 package calisthenics.todolist;
 
 import calisthenics.todolist.model.*;
+import calisthenics.todolist.service.IOService;
+import calisthenics.todolist.service.IOServiceImpl;
 
 /**
  * write a CLI which enables you to deal with a todo list
@@ -43,34 +45,84 @@ public class Main {
 
     private TodoList todoList;
 
+    private IOService ioService;
+
+    public Main() {
+        this.ioService = new IOServiceImpl();
+    }
+
+    public Main(IOService ioService) {
+        this.ioService = ioService;
+    }
+
     public static void main(String[] args) {
         Main main = new Main();
-        main.runTodoListProgram();
+        while (true) {
+            main.runTodoListProgram();
+        }
     }
 
     private void runTodoListProgram() {
-        IOService.writeToConsole(new IOMessage("state your command"));
-        while (true) {
-            IOMessage commandMessage = IOService.readFromConsole();
-            UserCommand command = UserCommand.valueOf(commandMessage.text);
-            final UserCommandOutput userCommandOutput = executeUserCommand(command);
-            final IOMessage message = new IOMessage(userCommandOutput.text);
-            IOService.writeToConsole(message);
-
+        UserCommand command;
+        try{
+            command = askUser();
+        }catch (IllegalArgumentException e){
+            tellUserOutcome(new UserCommandOutput("unknown command"));
+            return;
         }
+        final UserCommandOutput userCommandOutput = executeUserCommand(command);
+        tellUserOutcome(userCommandOutput);
+    }
+
+    private void tellUserOutcome(UserCommandOutput userCommandOutput) {
+        final IOMessage message = new IOMessage(userCommandOutput.text);
+        ioService.writeToConsole(message);
+        ioService.writeNewLineToConsole();
+    }
+
+    private UserCommand askUser() {
+        ioService.writeToConsole(new IOMessage("state your command"));
+        IOMessage commandMessage = ioService.readFromConsole();
+        return UserCommand.valueOf(commandMessage.text);
     }
 
 
     public UserCommandOutput executeUserCommand(UserCommand command) {
-        if (command == UserCommand.CREATE_TODO_LIST) {
-            Task testTask = new Task("test");
-            todoList = new TodoList();
-            todoList.addTask(testTask);
-
-            return new UserCommandOutput(todoList.toString());
+        if (command == UserCommand.create) {
+            return executeCreateCommand();
         }
+        if (command == UserCommand.addTask) {
+            return executeAddTaskCommand();
+        }
+        if (command == UserCommand.help) {
+            return executeHelpCommand();
+        }
+        throw new IllegalArgumentException("user command not recognized: " + command);
+    }
 
-        return new UserCommandOutput("unknown command");
+    private UserCommandOutput executeCreateCommand() {
+        todoList = new TodoList();
+        return new UserCommandOutput(todoList.toString());
+    }
+
+    private UserCommandOutput executeAddTaskCommand() {
+        if(todoList==null){
+            return new UserCommandOutput("no todo list created yet");
+        }
+        ioService.writeToConsole(new IOMessage("Which is the task name?"));
+        IOMessage taskName = ioService.readFromConsole();
+        Task testTask = new Task(taskName.text);
+        todoList.addTask(testTask);
+        return new UserCommandOutput(todoList.toString());
+    }
+
+    private UserCommandOutput executeHelpCommand() {
+        ioService.writeToConsole(new IOMessage("Here are the available commands:"));
+        String listOfCommands="";
+        for (UserCommand availableCommand:UserCommand.values()){
+            listOfCommands+=availableCommand.name() + " ";
+        }
+        return new UserCommandOutput(listOfCommands);
     }
 
 }
