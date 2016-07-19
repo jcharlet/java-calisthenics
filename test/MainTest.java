@@ -1,6 +1,7 @@
-import calisthenics.todolist.Main;
-import calisthenics.todolist.Task;
-import calisthenics.todolist.TodoList;
+import calisthenics.todolist.*;
+import calisthenics.todolist.model.Task;
+import calisthenics.todolist.model.TodoList;
+import calisthenics.todolist.model.UserCommand;
 
 /**
  * Created by jcharlet on 18/07/16.
@@ -24,11 +25,11 @@ public class MainTest {
         final String expectedOutput = expectedTodoList.toString();
 
         // when I ask to create a todo list
-        final String userCommandOutput = main.executeUserCommand(Main.CREATE_TODO_LIST);
+        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.CREATE_TODO_LIST);
 
         // todo list is returned with a test task
 
-        if (userCommandOutput.equals(expectedOutput)) {
+        if (userCommandOutput.text.equals(expectedOutput)) {
             System.out.println("OK");
         } else {
             throw new IllegalStateException("createNewList: not the expected output: " + userCommandOutput + " instead of: " + expectedOutput);

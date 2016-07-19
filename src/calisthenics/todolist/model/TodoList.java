@@ -1,4 +1,4 @@
-package calisthenics.todolist;
+package calisthenics.todolist.model;
 
 import java.util.Arrays;
 

@@ -1,5 +1,7 @@
 package calisthenics.todolist;
 
+import calisthenics.todolist.model.*;
+
 /**
  * write a CLI which enables you to deal with a todo list
  * <h2>rules</h2>
@@ -48,27 +50,30 @@ public class Main {
     }
 
     private void runTodoListProgram() {
-        UserInputService.log("state your command");
+        IOService.writeToConsole(new IOMessage("state your command"));
         TodoList todoList = null;
         while (true) {
-            String command = UserInputService.readUserInput();
-            final String userCommandOutput = executeUserCommand(command);
-            UserInputService.log(userCommandOutput);
+            IOMessage commandMessage = IOService.readFromConsole();
+            UserCommand command = UserCommand.valueOf(commandMessage.text);
+            final UserCommandOutput userCommandOutput = executeUserCommand(command);
+            final IOMessage message = new IOMessage(userCommandOutput.text);
+            IOService.writeToConsole(message);
 
         }
     }
 
-    public String executeUserCommand(String command) {
-        if (CREATE_TODO_LIST.equals(command)) {
+
+    public UserCommandOutput executeUserCommand(UserCommand command) {
+        if (command == UserCommand.CREATE_TODO_LIST) {
             Task testTask = new Task("test");
             Task[] tasks = new Task[1];
             tasks[0] = testTask;
             todoList = new TodoList(tasks);
 
-            return todoList.toString();
+            return new UserCommandOutput(todoList.toString());
         }
 
-        return "unknown command";
+        return new UserCommandOutput("unknown command");
     }
 
 }
