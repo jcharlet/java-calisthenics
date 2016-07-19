@@ -19,9 +19,8 @@ public class MainTest {
 
         //and the expected result
         Task testTask = new Task("test");
-        Task[] tasks = new Task[1];
-        tasks[0] = testTask;
-        TodoList expectedTodoList = new TodoList(tasks);
+        TodoList expectedTodoList = new TodoList();
+        expectedTodoList.addTask(testTask);
         final String expectedOutput = expectedTodoList.toString();
 
         // when I ask to create a todo list

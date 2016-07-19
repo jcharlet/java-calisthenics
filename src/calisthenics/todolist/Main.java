@@ -41,7 +41,6 @@ import calisthenics.todolist.model.*;
  */
 public class Main {
 
-    public static final String CREATE_TODO_LIST = "create";
     private TodoList todoList;
 
     public static void main(String[] args) {
@@ -51,7 +50,6 @@ public class Main {
 
     private void runTodoListProgram() {
         IOService.writeToConsole(new IOMessage("state your command"));
-        TodoList todoList = null;
         while (true) {
             IOMessage commandMessage = IOService.readFromConsole();
             UserCommand command = UserCommand.valueOf(commandMessage.text);
@@ -66,9 +64,8 @@ public class Main {
     public UserCommandOutput executeUserCommand(UserCommand command) {
         if (command == UserCommand.CREATE_TODO_LIST) {
             Task testTask = new Task("test");
-            Task[] tasks = new Task[1];
-            tasks[0] = testTask;
-            todoList = new TodoList(tasks);
+            todoList = new TodoList();
+            todoList.addTask(testTask);
 
             return new UserCommandOutput(todoList.toString());
         }
