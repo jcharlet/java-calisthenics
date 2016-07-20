@@ -24,4 +24,8 @@ public class TodoList {
         sb.append('}');
         return sb.toString();
     }
+
+    public void emptyTasks() {
+        this.tasks.clear();
+    }
 }

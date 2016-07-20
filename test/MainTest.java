@@ -21,19 +21,22 @@ public class MainTest {
         //given the program started
         Main main = new Main();
 
+        //with an empty todo list
+        final TodoList todoList = null;
+
         //and the expected result
         TodoList expectedTodoList = new TodoList();
         final String expectedOutput = expectedTodoList.toString();
 
         // when I ask to create a todo list
-        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.create);
+        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.create, todoList);
 
         // todo list is returned with a test task
 
         if (userCommandOutput.text.equals(expectedOutput)) {
             System.out.println("testCreateNewList OK");
         } else {
-            throw new IllegalStateException("createNewList: not the expected output: " + userCommandOutput + " instead of: " + expectedOutput);
+            throw new IllegalStateException("createNewList: not the expected output: " + userCommandOutput.text + " instead of: " + expectedOutput);
         }
     }
 
@@ -45,8 +48,8 @@ public class MainTest {
         //with our stub prepared
         ioServiceStub.stubMessage="test";
 
-        // and one todo list was created
-        main.executeUserCommand(UserCommand.create);
+        // and one empty todo list was created
+        final TodoList todoList = new TodoList();
 
         //and the expected result
         Task testTask = new Task("test");
@@ -55,14 +58,14 @@ public class MainTest {
         final String expectedOutput = expectedTodoList.toString();
 
         // WHEN I ask to add a task
-        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.addTask);
+        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.add, todoList);
 
         // THEN todo list is returned with a test task
 
         if (userCommandOutput.text.equals(expectedOutput)) {
             System.out.println("testAddTaskToList OK");
         } else {
-            throw new IllegalStateException("add task to list: not the expected output: " + userCommandOutput + " instead of: " + expectedOutput);
+            throw new IllegalStateException("add task to list: not the expected output: " + userCommandOutput.text + " instead of: " + expectedOutput);
         }
     }
 
@@ -77,14 +80,14 @@ public class MainTest {
         }
 
         // when I ask to get help
-        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.help);
+        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.help, null);
 
         // todo list is returned with a test task
 
         if (userCommandOutput.text.equals(expectedOutput)) {
             System.out.println("testGetHelp OK");
         } else {
-            throw new IllegalStateException("get help: not the expected output: " + userCommandOutput + " instead of: " + expectedOutput);
+            throw new IllegalStateException("get help: not the expected output: " + userCommandOutput.text + " instead of: " + expectedOutput);
         }
     }
 

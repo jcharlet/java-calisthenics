@@ -43,9 +43,7 @@ import calisthenics.todolist.service.IOServiceImpl;
  */
 public class Main {
 
-    private TodoList todoList;
-
-    private IOService ioService;
+    private final IOService ioService;
 
     public Main() {
         this.ioService = new IOServiceImpl();
@@ -57,12 +55,13 @@ public class Main {
 
     public static void main(String[] args) {
         Main main = new Main();
+        TodoList todoList = new TodoList();
         while (true) {
-            main.runTodoListProgram();
+            main.runTodoListProgram(todoList);
         }
     }
 
-    private void runTodoListProgram() {
+    private void runTodoListProgram(TodoList todoList) {
         UserCommand command;
         try{
             command = askUser();
@@ -70,7 +69,7 @@ public class Main {
             tellUserOutcome(new UserCommandOutput("unknown command"));
             return;
         }
-        final UserCommandOutput userCommandOutput = executeUserCommand(command);
+        final UserCommandOutput userCommandOutput = executeUserCommand(command, todoList);
         tellUserOutcome(userCommandOutput);
     }
 
@@ -87,42 +86,85 @@ public class Main {
     }
 
 
-    public UserCommandOutput executeUserCommand(UserCommand command) {
-        if (command == UserCommand.create) {
-            return executeCreateCommand();
+    public UserCommandOutput executeUserCommand(UserCommand command, TodoList todoList) {
+        CommandRunner commandRunner = null;
+        switch (command) {
+            case create:
+                commandRunner = new CreateCommandRunner(ioService);
+                break;
+            case add:
+                commandRunner = new AddTaskCommandRunner(ioService);
+                break;
+            case help:
+            default:
+                commandRunner = new ShowHelpCommandRunner(ioService);
+                break;
         }
-        if (command == UserCommand.addTask) {
-            return executeAddTaskCommand();
-        }
-        if (command == UserCommand.help) {
-            return executeHelpCommand();
-        }
-        throw new IllegalArgumentException("user command not recognized: " + command);
+        return commandRunner.executeCreateCommand(todoList);
     }
 
-    private UserCommandOutput executeCreateCommand() {
-        todoList = new TodoList();
-        return new UserCommandOutput(todoList.toString());
-    }
+    public abstract class CommandRunner{
+        protected final IOService ioService;
 
-    private UserCommandOutput executeAddTaskCommand() {
-        if(todoList==null){
-            return new UserCommandOutput("no todo list created yet");
+        protected CommandRunner(IOService ioService) {
+            this.ioService = ioService;
         }
-        ioService.writeToConsole(new IOMessage("Which is the task name?"));
-        IOMessage taskName = ioService.readFromConsole();
-        Task testTask = new Task(taskName.text);
-        todoList.addTask(testTask);
-        return new UserCommandOutput(todoList.toString());
-    }
 
-    private UserCommandOutput executeHelpCommand() {
-        ioService.writeToConsole(new IOMessage("Here are the available commands:"));
-        String listOfCommands="";
-        for (UserCommand availableCommand:UserCommand.values()){
-            listOfCommands+=availableCommand.name() + " ";
+        public UserCommandOutput executeCreateCommand(TodoList todoList){
+            return new UserCommandOutput("");
         }
-        return new UserCommandOutput(listOfCommands);
     }
 
+    public class CreateCommandRunner extends CommandRunner{
+
+        public CreateCommandRunner(IOService ioService) {
+            super(ioService);
+        }
+
+        @Override
+        public UserCommandOutput executeCreateCommand(TodoList todoList) {
+            if (todoList==null){
+                todoList = new TodoList();
+            }
+            todoList.emptyTasks();
+            return new UserCommandOutput(todoList.toString());
+        }
+    }
+
+    public class AddTaskCommandRunner extends  CommandRunner{
+
+        public AddTaskCommandRunner(IOService ioService) {
+            super(ioService);
+        }
+
+        @Override
+        public UserCommandOutput executeCreateCommand(TodoList todoList) {
+            if(todoList ==null){
+                return new UserCommandOutput("no todo list created yet");
+            }
+            this.ioService.writeToConsole(new IOMessage("Which is the task name?"));
+            IOMessage taskName = ioService.readFromConsole();
+            Task testTask = new Task(taskName.text);
+            todoList.addTask(testTask);
+            return new UserCommandOutput(todoList.toString());
+        }
+    }
+
+    public class ShowHelpCommandRunner extends CommandRunner{
+
+        public ShowHelpCommandRunner(IOService ioService) {
+            super(ioService);
+        }
+
+        @Override
+        public UserCommandOutput executeCreateCommand(TodoList todoList) {
+            this.ioService.writeToConsole(new IOMessage("Here are the available commands:"));
+            String listOfCommands="";
+            for (UserCommand availableCommand:UserCommand.values()){
+                listOfCommands+=availableCommand.name() + " ";
+            }
+            return new UserCommandOutput(listOfCommands);
+        }
+
+    }
 }
