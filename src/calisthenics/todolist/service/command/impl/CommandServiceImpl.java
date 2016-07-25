@@ -1,15 +1,11 @@
 package calisthenics.todolist.service.command.impl;
 
-import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
-import calisthenics.todolist.model.command.UserCommandOutput;
+import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.command.CommandService;
+import calisthenics.todolist.service.command.CommandStrategy;
 import calisthenics.todolist.service.communication.CommunicationService;
-import calisthenics.todolist.service.command.AddTaskCommandRunner;
-import calisthenics.todolist.service.command.CommandRunner;
-import calisthenics.todolist.service.command.CreateCommandRunner;
-import calisthenics.todolist.service.command.ShowHelpCommandRunner;
 
 /**
  * Created by jcharlet on 18/07/16.
@@ -37,21 +33,21 @@ public class CommandServiceImpl implements CommandService {
 
 
     @Override
-    public UserCommandOutput executeUserCommand(UserCommand command, TodoList todoList) {
-        CommandRunner commandRunner = null;
+    public void executeUserCommand(UserCommand command, TodoList todoList) {
+        CommandStrategy commandStrategy;
         switch (command) {
             case create:
-                commandRunner = new CreateCommandRunner(communicationService);
+                commandStrategy = new CreateCommandStrategy();
                 break;
             case add:
-                commandRunner = new AddTaskCommandRunner(communicationService);
+                commandStrategy = new AddTaskCommandStrategy(communicationService);
                 break;
             case help:
             default:
-                commandRunner = new ShowHelpCommandRunner(communicationService);
+                commandStrategy = new ShowHelpCommandStrategy(communicationService);
                 break;
         }
-        return commandRunner.executeCreateCommand(todoList);
+        commandStrategy.executeCommand(todoList);
     }
 
 }

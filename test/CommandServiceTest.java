@@ -1,7 +1,6 @@
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
-import calisthenics.todolist.model.command.UserCommandOutput;
 import calisthenics.todolist.service.command.impl.CommandServiceImpl;
 import stubs.CommunicationServiceStub;
 
@@ -22,22 +21,23 @@ public class CommandServiceTest {
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
 
-        //with an empty todo list
-        final TodoList todoList = null;
+        //with a not empty todo list
+        TodoList todoList = new TodoList();
+        todoList.addTask(new Task("test"));
 
         //and the expected result
         TodoList expectedTodoList = new TodoList();
         final String expectedOutput = expectedTodoList.toString();
 
         // when I ask to create a todo list
-        final UserCommandOutput userCommandOutput = commandService.executeUserCommand(UserCommand.create, todoList);
+        commandService.executeUserCommand(UserCommand.create, todoList);
 
         // todo list is returned with a test task
 
-        if (userCommandOutput.text.equals(expectedOutput)) {
+        if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testCreateNewList OK");
         } else {
-            throw new IllegalStateException("createNewList: not the expected output: " + userCommandOutput.text + " instead of: " + expectedOutput);
+            throw new IllegalStateException("createNewList: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
         }
     }
 
@@ -47,10 +47,10 @@ public class CommandServiceTest {
         final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
 
         //with our stub prepared
-        communicationServiceStub.stubMessage="test";
+        communicationServiceStub.stubInputMessage ="test";
 
         // and one empty todo list was created
-        final TodoList todoList = new TodoList();
+        TodoList todoList = new TodoList();
 
         //and the expected result
         Task testTask = new Task("test");
@@ -59,14 +59,14 @@ public class CommandServiceTest {
         final String expectedOutput = expectedTodoList.toString();
 
         // WHEN I ask to add a task
-        final UserCommandOutput userCommandOutput = commandService.executeUserCommand(UserCommand.add, todoList);
+        commandService.executeUserCommand(UserCommand.add, todoList);
 
         // THEN todo list is returned with a test task
 
-        if (userCommandOutput.text.equals(expectedOutput)) {
+        if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testAddTaskToList OK");
         } else {
-            throw new IllegalStateException("add task to list: not the expected output: " + userCommandOutput.text + " instead of: " + expectedOutput);
+            throw new IllegalStateException("add task to list: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
         }
     }
 
@@ -74,6 +74,7 @@ public class CommandServiceTest {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
+        TodoList todoList = null;
 
         //and the expected result
         String expectedOutput="";
@@ -82,14 +83,14 @@ public class CommandServiceTest {
         }
 
         // when I ask to get help
-        final UserCommandOutput userCommandOutput = commandService.executeUserCommand(UserCommand.help, null);
+        commandService.executeUserCommand(UserCommand.help, todoList);
 
         // todo list is returned with a test task
 
-        if (userCommandOutput.text.equals(expectedOutput)) {
+        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && todoList==null) {
             System.out.println("testGetHelp OK");
         } else {
-            throw new IllegalStateException("get help: not the expected output: " + userCommandOutput.text + " instead of: " + expectedOutput);
+            throw new IllegalStateException("get help: not the expected output: " + communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutput);
         }
     }
 

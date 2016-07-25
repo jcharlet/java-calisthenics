@@ -8,16 +8,17 @@ import calisthenics.todolist.service.communication.CommunicationService;
  */
 public class CommunicationServiceStub implements CommunicationService {
 
-    public String stubMessage ="";
+    public String stubInputMessage ="";
+    public String stubOutputMessage="";
 
     @Override
     public void tellUser(Message message) {
-
+        this.stubOutputMessage = message.text;
     }
 
     @Override
     public Message getUserInput() {
-        return new Message(stubMessage);
+        return new Message(stubInputMessage);
     }
 
     @Override
