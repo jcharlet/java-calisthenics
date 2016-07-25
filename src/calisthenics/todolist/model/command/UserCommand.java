@@ -1,4 +1,4 @@
-package calisthenics.todolist.model;
+package calisthenics.todolist.model.command;
 
 /**
  * Created by jcharlet on 19/07/16.

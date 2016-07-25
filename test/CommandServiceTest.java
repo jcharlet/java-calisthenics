@@ -1,17 +1,17 @@
-import calisthenics.todolist.Main;
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
-import calisthenics.todolist.model.UserCommand;
-import calisthenics.todolist.model.UserCommandOutput;
-import stubs.IOServiceStub;
+import calisthenics.todolist.model.command.UserCommand;
+import calisthenics.todolist.model.command.UserCommandOutput;
+import calisthenics.todolist.service.command.impl.CommandServiceImpl;
+import stubs.CommunicationServiceStub;
 
 /**
  * Created by jcharlet on 18/07/16.
  */
-public class MainTest {
+public class CommandServiceTest {
 
     public static void main(String[] args) {
-        MainTest main = new MainTest();
+        CommandServiceTest main = new CommandServiceTest();
         main.testCreateNewList();
         main.testAddTaskToList();
         main.testGetHelp();
@@ -19,7 +19,8 @@ public class MainTest {
 
     private void testCreateNewList() {
         //given the program started
-        Main main = new Main();
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
 
         //with an empty todo list
         final TodoList todoList = null;
@@ -29,7 +30,7 @@ public class MainTest {
         final String expectedOutput = expectedTodoList.toString();
 
         // when I ask to create a todo list
-        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.create, todoList);
+        final UserCommandOutput userCommandOutput = commandService.executeUserCommand(UserCommand.create, todoList);
 
         // todo list is returned with a test task
 
@@ -42,11 +43,11 @@ public class MainTest {
 
     private void testAddTaskToList() {
         //GIVEN the program started
-        IOServiceStub ioServiceStub = new IOServiceStub();
-        Main main = new Main(ioServiceStub);
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
 
         //with our stub prepared
-        ioServiceStub.stubMessage="test";
+        communicationServiceStub.stubMessage="test";
 
         // and one empty todo list was created
         final TodoList todoList = new TodoList();
@@ -58,7 +59,7 @@ public class MainTest {
         final String expectedOutput = expectedTodoList.toString();
 
         // WHEN I ask to add a task
-        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.add, todoList);
+        final UserCommandOutput userCommandOutput = commandService.executeUserCommand(UserCommand.add, todoList);
 
         // THEN todo list is returned with a test task
 
@@ -71,7 +72,8 @@ public class MainTest {
 
     private void testGetHelp(){
         //given the program started
-        Main main = new Main(new IOServiceStub());
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
 
         //and the expected result
         String expectedOutput="";
@@ -80,7 +82,7 @@ public class MainTest {
         }
 
         // when I ask to get help
-        final UserCommandOutput userCommandOutput = main.executeUserCommand(UserCommand.help, null);
+        final UserCommandOutput userCommandOutput = commandService.executeUserCommand(UserCommand.help, null);
 
         // todo list is returned with a test task
 
