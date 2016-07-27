@@ -1,10 +1,10 @@
 package calisthenics.todolist.service.command.impl;
 
+import calisthenics.todolist.model.ApplicationContext;
 import calisthenics.todolist.model.Task;
-import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.communication.Message;
-import calisthenics.todolist.service.command.CommandStrategy;
 import calisthenics.todolist.service.CommunicationService;
+import calisthenics.todolist.service.command.CommandStrategy;
 
 /**
  * Created by jcharlet on 25/07/16.
@@ -18,14 +18,14 @@ public class AddTaskCommandStrategy implements CommandStrategy {
     }
 
     @Override
-    public void executeCommand(TodoList todoList) {
-        if (todoList == null) {
+    public void executeCommand() {
+        if (ApplicationContext.todoList == null) {
             communicationService.tellUser(new Message("no todo list created yet"));
         }
         this.communicationService.tellUser(new Message("Which is the task name?"));
         Message taskName = communicationService.getUserInput();
         Task testTask = new Task(taskName.text);
-        todoList.addTask(testTask);
-        communicationService.tellUser(new Message(todoList.toString()));
+        ApplicationContext.todoList.addTask(testTask);
+        communicationService.tellUser(new Message(ApplicationContext.todoList.toString()));
     }
 }

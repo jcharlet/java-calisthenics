@@ -1,5 +1,6 @@
 package calisthenics.todolist;
 
+import calisthenics.todolist.model.ApplicationContext;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
@@ -67,13 +68,13 @@ public class Main {
 
     public static void main(String[] args) {
         Main main = new Main();
-        TodoList todoList = new TodoList();
+        ApplicationContext.todoList = new TodoList();
         while (true) {
-            main.runTodoListProgram(todoList);
+            main.runTodoListProgram();
         }
     }
 
-    private void runTodoListProgram(TodoList todoList) {
+    private void runTodoListProgram() {
         communicationService.tellUser(new Message("state your command"));
 
         final Message userMessage = communicationService.getUserInput();
@@ -81,7 +82,7 @@ public class Main {
         UserCommand command = commandService.parseCommmand(userMessage.text);
 
         if (command != null){
-            commandService.executeUserCommand(command, todoList);
+            commandService.executeUserCommand(command);
         }
     }
 

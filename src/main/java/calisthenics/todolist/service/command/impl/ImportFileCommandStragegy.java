@@ -1,6 +1,6 @@
 package calisthenics.todolist.service.command.impl;
 
-import calisthenics.todolist.model.TodoList;
+import calisthenics.todolist.model.ApplicationContext;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.CommunicationService;
 import calisthenics.todolist.service.IOService;
@@ -21,18 +21,18 @@ public class ImportFileCommandStragegy implements CommandStrategy {
     }
 
     @Override
-    public void executeCommand(TodoList todoList) {
+    public void executeCommand() {
         communicationService.tellUser(new Message("please provide path of your file"));
         final Message userInputFilePath = communicationService.getUserInput();
         final String filePath = userInputFilePath.text;
         try {
-            todoList = ioService.importTodoListFromFile(filePath);
+            ApplicationContext.todoList = ioService.importTodoListFromFile(filePath);
         } catch (IOException e) {
             communicationService.tellUser(new Message("file with path " + filePath + " does not exist"));
             return;
         }
 
-        communicationService.tellUser(new Message(todoList.toString()));
+        communicationService.tellUser(new Message(ApplicationContext.todoList.toString()));
 
     }
 }

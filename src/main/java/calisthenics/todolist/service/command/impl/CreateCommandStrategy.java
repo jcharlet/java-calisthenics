@@ -1,5 +1,6 @@
 package calisthenics.todolist.service.command.impl;
 
+import calisthenics.todolist.model.ApplicationContext;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.service.command.CommandStrategy;
 
@@ -12,10 +13,10 @@ public class CreateCommandStrategy implements CommandStrategy {
     }
 
     @Override
-    public void executeCommand(TodoList todoList) {
-        if (todoList == null) {
-            todoList = new TodoList();
+    public void executeCommand() {
+        if (ApplicationContext.todoList == null) {
+            ApplicationContext.todoList = new TodoList();
         }
-        todoList.emptyTasks();
+        ApplicationContext.todoList.emptyTasks();
     }
 }

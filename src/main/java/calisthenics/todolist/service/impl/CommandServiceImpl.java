@@ -1,12 +1,11 @@
 package calisthenics.todolist.service.impl;
 
-import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
 import calisthenics.todolist.model.communication.Message;
-import calisthenics.todolist.service.IOService;
 import calisthenics.todolist.service.CommandService;
-import calisthenics.todolist.service.command.CommandStrategy;
 import calisthenics.todolist.service.CommunicationService;
+import calisthenics.todolist.service.IOService;
+import calisthenics.todolist.service.command.CommandStrategy;
 import calisthenics.todolist.service.command.impl.*;
 
 /**
@@ -37,7 +36,7 @@ public class CommandServiceImpl implements CommandService {
 
 
     @Override
-    public void executeUserCommand(UserCommand command, TodoList todoList) {
+    public void executeUserCommand(UserCommand command) {
         CommandStrategy commandStrategy;
         switch (command) {
             case create:
@@ -57,7 +56,7 @@ public class CommandServiceImpl implements CommandService {
                 commandStrategy = new ShowHelpCommandStrategy(communicationService);
                 break;
         }
-        commandStrategy.executeCommand(todoList);
+        commandStrategy.executeCommand();
     }
 
 }

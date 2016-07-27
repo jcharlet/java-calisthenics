@@ -9,5 +9,5 @@ import calisthenics.todolist.model.command.UserCommand;
 public interface CommandService {
     UserCommand parseCommmand(String commandString);
 
-    void executeUserCommand(UserCommand command, TodoList todoList);
+    void executeUserCommand(UserCommand command);
 }
