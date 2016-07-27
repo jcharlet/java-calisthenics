@@ -1,7 +1,7 @@
 package stubs;
 
 import calisthenics.todolist.model.communication.Message;
-import calisthenics.todolist.service.communication.CommunicationService;
+import calisthenics.todolist.service.CommunicationService;
 
 /**
  * Created by jcharlet on 19/07/16.

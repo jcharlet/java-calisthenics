@@ -1,8 +1,11 @@
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
-import calisthenics.todolist.service.command.impl.CommandServiceImpl;
+import calisthenics.todolist.service.IOService;
+import calisthenics.todolist.service.impl.CommandServiceImpl;
+import calisthenics.todolist.service.impl.IOServiceImpl;
 import stubs.CommunicationServiceStub;
+import stubs.IOServiceStub;
 
 /**
  * Created by jcharlet on 18/07/16.
@@ -15,12 +18,14 @@ public class CommandServiceTest {
         main.testAddTaskToList();
         main.testGetHelp();
         main.testShowTodoList();
+        main.testImportTodoListFromFile();
     }
 
     private void testCreateNewList() {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
+        IOService ioService = new IOServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
 
         //with a not empty todo list
         TodoList todoList = new TodoList();
@@ -45,7 +50,8 @@ public class CommandServiceTest {
     private void testAddTaskToList() {
         //GIVEN the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
+        IOService ioService = new IOServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
 
         //with our stub prepared
         communicationServiceStub.stubInputMessage ="test";
@@ -74,7 +80,8 @@ public class CommandServiceTest {
     private void testShowTodoList(){
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
+        IOService ioService = new IOServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
         TodoList todoList = new TodoList();
         todoList.addTask(new Task("test"));
 
@@ -98,7 +105,8 @@ public class CommandServiceTest {
     private void testGetHelp(){
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
+        IOService ioService = new IOServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
         TodoList todoList = null;
 
         //and the expected result
@@ -119,4 +127,34 @@ public class CommandServiceTest {
         }
     }
 
+    private void testImportTodoListFromFile() {
+        //GIVEN the program started
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        //FIXME ioservice should be tested somewhere else, we should only use stubs here
+        IOService ioService = new IOServiceImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
+
+        //with our stub prepared
+        communicationServiceStub.stubInputMessage ="src/test/resources/todolist.txt";
+
+        // and one empty todo list was created
+        TodoList todoList = new TodoList();
+
+        //and the expected result
+        TodoList expectedTodoList = new TodoList();
+        expectedTodoList.addTask(new Task("task1"));
+        expectedTodoList.addTask(new Task("task2"));
+        final String expectedOutput = expectedTodoList.toString();
+
+        // WHEN I ask to add a task
+        commandService.executeUserCommand(UserCommand.importFile, todoList);
+
+        // THEN todo list is returned with a test task
+
+        if (expectedOutput.equals(todoList.toString())) {
+            System.out.println("testImportTodoListFromFile OK");
+        } else {
+            throw new IllegalStateException("testImportTodoListFromFile: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
+        }
+    }
 }

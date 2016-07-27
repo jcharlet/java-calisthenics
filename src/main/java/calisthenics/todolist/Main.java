@@ -3,10 +3,12 @@ package calisthenics.todolist;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
-import calisthenics.todolist.service.command.CommandService;
-import calisthenics.todolist.service.command.impl.CommandServiceImpl;
-import calisthenics.todolist.service.communication.CommunicationService;
-import calisthenics.todolist.service.communication.impl.CommunicationServiceImpl;
+import calisthenics.todolist.service.IOService;
+import calisthenics.todolist.service.CommandService;
+import calisthenics.todolist.service.impl.CommandServiceImpl;
+import calisthenics.todolist.service.CommunicationService;
+import calisthenics.todolist.service.impl.CommunicationServiceImpl;
+import calisthenics.todolist.service.impl.IOServiceImpl;
 
 /**
  * write a CLI which enables you to deal with a todo list
@@ -49,15 +51,18 @@ public class Main {
 
     private final CommunicationService communicationService;
     private final CommandService commandService;
+    private final IOService ioService;
 
     public Main() {
+        this.ioService = new IOServiceImpl();
         this.communicationService = new CommunicationServiceImpl();
-        this.commandService = new CommandServiceImpl(communicationService);
+        this.commandService = new CommandServiceImpl(communicationService, this.ioService);
     }
 
-    public Main(CommunicationService communicationService, CommandService commandService) {
+    public Main(CommunicationService communicationService, CommandService commandService, IOService ioService) {
         this.communicationService = communicationService;
         this.commandService = commandService;
+        this.ioService = ioService;
     }
 
     public static void main(String[] args) {

@@ -1,7 +1,7 @@
-package calisthenics.todolist.service.communication.impl;
+package calisthenics.todolist.service.impl;
 
 import calisthenics.todolist.model.communication.Message;
-import calisthenics.todolist.service.communication.CommunicationService;
+import calisthenics.todolist.service.CommunicationService;
 
 import java.util.Scanner;
 

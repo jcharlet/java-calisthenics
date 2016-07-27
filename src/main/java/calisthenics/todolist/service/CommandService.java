@@ -1,4 +1,4 @@
-package calisthenics.todolist.service.command;
+package calisthenics.todolist.service;
 
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;

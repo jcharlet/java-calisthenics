@@ -1,4 +1,4 @@
-package calisthenics.todolist.service.communication;
+package calisthenics.todolist.service;
 
 import calisthenics.todolist.model.communication.Message;
 

@@ -4,7 +4,7 @@ import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.command.CommandStrategy;
-import calisthenics.todolist.service.communication.CommunicationService;
+import calisthenics.todolist.service.CommunicationService;
 
 /**
  * Created by jcharlet on 25/07/16.
