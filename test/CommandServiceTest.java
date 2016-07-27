@@ -14,6 +14,7 @@ public class CommandServiceTest {
         main.testCreateNewList();
         main.testAddTaskToList();
         main.testGetHelp();
+        main.testShowTodoList();
     }
 
     private void testCreateNewList() {
@@ -67,6 +68,30 @@ public class CommandServiceTest {
             System.out.println("testAddTaskToList OK");
         } else {
             throw new IllegalStateException("add task to list: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
+        }
+    }
+
+    private void testShowTodoList(){
+        //given the program started
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub);
+        TodoList todoList = new TodoList();
+        todoList.addTask(new Task("test"));
+
+        //and the expected result
+        TodoList expectedTodoList = new TodoList();
+        expectedTodoList.addTask(new Task("test"));
+        String expectedOutput=expectedTodoList.toString();
+
+        // when I ask to get help
+        commandService.executeUserCommand(UserCommand.show, todoList);
+
+        // todo list is returned with a test task
+
+        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && todoList.toString().equals(expectedTodoList.toString())) {
+            System.out.println("testShowTodoList OK");
+        } else {
+            throw new IllegalStateException("testShowTodoList: not the expected output: " + communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutput);
         }
     }
 

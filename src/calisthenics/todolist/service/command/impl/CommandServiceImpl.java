@@ -42,6 +42,9 @@ public class CommandServiceImpl implements CommandService {
             case add:
                 commandStrategy = new AddTaskCommandStrategy(communicationService);
                 break;
+            case show:
+                commandStrategy = new ShowCommandStragegy(communicationService);
+                break;
             case help:
             default:
                 commandStrategy = new ShowHelpCommandStrategy(communicationService);
