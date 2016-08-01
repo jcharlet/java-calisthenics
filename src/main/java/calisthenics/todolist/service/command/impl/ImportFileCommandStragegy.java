@@ -1,6 +1,8 @@
 package calisthenics.todolist.service.command.impl;
 
+import calisthenics.todolist.dao.TodoListDao;
 import calisthenics.todolist.model.ApplicationContext;
+import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.CommunicationService;
 import calisthenics.todolist.service.IOService;
@@ -11,11 +13,12 @@ import java.io.IOException;
 /**
  * Created by jcharlet on 27/07/16.
  */
-public class ImportFileCommandStragegy implements CommandStrategy {
+public class ImportFileCommandStragegy extends CommandStrategy {
     private final CommunicationService communicationService;
     private final IOService ioService;
 
-    public ImportFileCommandStragegy(CommunicationService communicationService, IOService ioService) {
+    public ImportFileCommandStragegy(TodoListDao todoListDao, CommunicationService communicationService, IOService ioService) {
+        super(todoListDao);
         this.communicationService = communicationService;
         this.ioService = ioService;
     }
@@ -26,7 +29,8 @@ public class ImportFileCommandStragegy implements CommandStrategy {
         final Message userInputFilePath = communicationService.getUserInput();
         final String filePath = userInputFilePath.text;
         try {
-            ApplicationContext.todoList = ioService.importTodoListFromFile(filePath);
+            final TodoList todoList = ioService.importTodoListFromFile(filePath);
+            todoListDao.save(todoList);
         } catch (IOException e) {
             communicationService.tellUser(new Message("file with path " + filePath + " does not exist"));
             return;

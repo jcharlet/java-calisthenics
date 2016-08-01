@@ -1,5 +1,6 @@
 package calisthenics.todolist.service.command.impl;
 
+import calisthenics.todolist.dao.TodoListDao;
 import calisthenics.todolist.model.command.UserCommand;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.CommunicationService;
@@ -8,11 +9,12 @@ import calisthenics.todolist.service.command.CommandStrategy;
 /**
  * Created by jcharlet on 25/07/16.
  */
-public class ShowHelpCommandStrategy implements CommandStrategy {
+public class ShowHelpCommandStrategy extends CommandStrategy {
 
     private final CommunicationService communicationService;
 
-    public ShowHelpCommandStrategy(CommunicationService communicationService) {
+    public ShowHelpCommandStrategy(TodoListDao todoListDao, CommunicationService communicationService) {
+        super(todoListDao);
         this.communicationService=communicationService;
     }
 

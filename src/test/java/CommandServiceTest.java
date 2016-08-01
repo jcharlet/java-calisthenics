@@ -1,4 +1,5 @@
-import calisthenics.todolist.model.ApplicationContext;
+import calisthenics.todolist.dao.TodoListDao;
+import calisthenics.todolist.dao.impl.TodoListDaoImpl;
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
@@ -26,11 +27,13 @@ public class CommandServiceTest {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
+        TodoListDao todoListDao = new TodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with a not empty todo list
-        ApplicationContext.todoList = new TodoList();
-        ApplicationContext.todoList.addTask(new Task("test"));
+        TodoList initTodoList = new TodoList();
+        initTodoList.addTask(new Task("test"));
+        todoListDao.save(initTodoList);
 
         //and the expected result
         TodoList expectedTodoList = new TodoList();
@@ -38,13 +41,14 @@ public class CommandServiceTest {
 
         // when I ask to create a todo list
         commandService.executeUserCommand(UserCommand.create);
+        final TodoList todoList = todoListDao.get();
 
         // todo list is returned with a test task
 
-        if (expectedOutput.equals(ApplicationContext.todoList.toString())) {
+        if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testCreateNewList OK");
         } else {
-            throw new IllegalStateException("createNewList: not the expected output: " + ApplicationContext.todoList.toString() + " instead of: " + expectedOutput);
+            throw new IllegalStateException("createNewList: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
         }
     }
 
@@ -52,13 +56,14 @@ public class CommandServiceTest {
         //GIVEN the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
+        TodoListDao todoListDao = new TodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with our stub prepared
-        communicationServiceStub.stubInputMessage ="test";
+        communicationServiceStub.stubInputMessage = "test";
 
         // and one empty todo list was created
-        ApplicationContext.todoList = new TodoList();
+        todoListDao.save(new TodoList());
 
         //and the expected result
         Task testTask = new Task("test");
@@ -68,60 +73,70 @@ public class CommandServiceTest {
 
         // WHEN I ask to add a task
         commandService.executeUserCommand(UserCommand.add);
+        final TodoList todoList = todoListDao.get();
 
         // THEN todo list is returned with a test task
 
-        if (expectedOutput.equals(ApplicationContext.todoList.toString())) {
+        if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testAddTaskToList OK");
         } else {
-            throw new IllegalStateException("add task to list: not the expected output: " + ApplicationContext.todoList.toString() + " instead of: " + expectedOutput);
+            throw new IllegalStateException("add task to list: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
         }
     }
 
-    private void testShowTodoList(){
+    private void testShowTodoList() {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
-        ApplicationContext.todoList = new TodoList();
-        ApplicationContext.todoList.addTask(new Task("test"));
+        TodoListDao todoListDao = new TodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+
+        // with a todo list initialized
+        TodoList initTodoList = new TodoList();
+        initTodoList.addTask(new Task("test"));
+        todoListDao.save(initTodoList);
 
         //and the expected result
         TodoList expectedTodoList = new TodoList();
         expectedTodoList.addTask(new Task("test"));
-        String expectedOutput=expectedTodoList.toString();
+        String expectedOutput = expectedTodoList.toString();
 
         // when I ask to get help
         commandService.executeUserCommand(UserCommand.show);
+        final TodoList todoList = todoListDao.get();
 
         // todo list is returned with a test task
 
-        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && ApplicationContext.todoList.toString().equals(expectedTodoList.toString())) {
+        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && todoList.toString().equals(expectedTodoList.toString())) {
             System.out.println("testShowTodoList OK");
         } else {
             throw new IllegalStateException("testShowTodoList: not the expected output: " + communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutput);
         }
     }
 
-    private void testGetHelp(){
+    private void testGetHelp() {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
-        ApplicationContext.todoList = null;
+        TodoListDao todoListDao = new TodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+
+        // with no todo list initialized
+        todoListDao.save(null);
 
         //and the expected result
-        String expectedOutput="";
-        for (UserCommand availableCommand:UserCommand.values()){
-            expectedOutput+=availableCommand.name() + " ";
+        String expectedOutput = "";
+        for (UserCommand availableCommand : UserCommand.values()) {
+            expectedOutput += availableCommand.name() + " ";
         }
 
         // when I ask to get help
         commandService.executeUserCommand(UserCommand.help);
+        final TodoList todoList = todoListDao.get();
 
         // todo list is returned with a test task
 
-        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && ApplicationContext.todoList==null) {
+        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && todoList == null) {
             System.out.println("testGetHelp OK");
         } else {
             throw new IllegalStateException("get help: not the expected output: " + communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutput);
@@ -133,13 +148,15 @@ public class CommandServiceTest {
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         //FIXME ioservice should be tested somewhere else, we should only use stubs here
         IOService ioService = new IOServiceImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(communicationServiceStub, ioService);
+        TodoListDao todoListDao = new TodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with our stub prepared
-        communicationServiceStub.stubInputMessage ="src/test/resources/todolist.txt";
+        communicationServiceStub.stubInputMessage = "src/test/resources/todolist.txt";
 
         // and one empty todo list was created
-        ApplicationContext.todoList = new TodoList();
+        // with a todo list initialized
+        todoListDao.save(new TodoList());
 
         //and the expected result
         TodoList expectedTodoList = new TodoList();
@@ -149,13 +166,14 @@ public class CommandServiceTest {
 
         // WHEN I ask to add a task
         commandService.executeUserCommand(UserCommand.importFile);
+        final TodoList todoList = todoListDao.get();
 
         // THEN todo list is returned with a test task
 
-        if (expectedOutput.equals(ApplicationContext.todoList.toString())) {
+        if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testImportTodoListFromFile OK");
         } else {
-            throw new IllegalStateException("testImportTodoListFromFile: not the expected output: " + ApplicationContext.todoList.toString() + " instead of: " + expectedOutput);
+            throw new IllegalStateException("testImportTodoListFromFile: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
         }
     }
 }

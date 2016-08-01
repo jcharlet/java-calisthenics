@@ -1,5 +1,6 @@
 package calisthenics.todolist.service.impl;
 
+import calisthenics.todolist.dao.TodoListDao;
 import calisthenics.todolist.model.command.UserCommand;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.CommandService;
@@ -15,8 +16,10 @@ public class CommandServiceImpl implements CommandService {
 
     private final CommunicationService communicationService;
     private final IOService ioService;
+    private final TodoListDao todoListDao;
 
-    public CommandServiceImpl(CommunicationService communicationService, IOService ioService) {
+    public CommandServiceImpl(TodoListDao todoListDao, CommunicationService communicationService, IOService ioService) {
+        this.todoListDao = todoListDao;
         this.communicationService = communicationService;
         this.ioService = ioService;
     }
@@ -40,20 +43,20 @@ public class CommandServiceImpl implements CommandService {
         CommandStrategy commandStrategy;
         switch (command) {
             case create:
-                commandStrategy = new CreateCommandStrategy();
+                commandStrategy = new CreateCommandStrategy(todoListDao);
                 break;
             case add:
-                commandStrategy = new AddTaskCommandStrategy(communicationService);
+                commandStrategy = new AddTaskCommandStrategy(todoListDao,communicationService);
                 break;
             case show:
-                commandStrategy = new ShowCommandStragegy(communicationService);
+                commandStrategy = new ShowCommandStragegy(todoListDao,communicationService);
                 break;
             case importFile:
-                commandStrategy = new ImportFileCommandStragegy(communicationService, ioService);
+                commandStrategy = new ImportFileCommandStragegy(todoListDao,communicationService, ioService);
                 break;
             case help:
             default:
-                commandStrategy = new ShowHelpCommandStrategy(communicationService);
+                commandStrategy = new ShowHelpCommandStrategy(todoListDao,communicationService);
                 break;
         }
         commandStrategy.executeCommand();

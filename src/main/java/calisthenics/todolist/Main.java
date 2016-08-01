@@ -1,13 +1,14 @@
 package calisthenics.todolist;
 
-import calisthenics.todolist.model.ApplicationContext;
-import calisthenics.todolist.model.communication.Message;
+import calisthenics.todolist.dao.TodoListDao;
+import calisthenics.todolist.dao.impl.TodoListDaoImpl;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
-import calisthenics.todolist.service.IOService;
+import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.CommandService;
-import calisthenics.todolist.service.impl.CommandServiceImpl;
 import calisthenics.todolist.service.CommunicationService;
+import calisthenics.todolist.service.IOService;
+import calisthenics.todolist.service.impl.CommandServiceImpl;
 import calisthenics.todolist.service.impl.CommunicationServiceImpl;
 import calisthenics.todolist.service.impl.IOServiceImpl;
 
@@ -53,22 +54,26 @@ public class Main {
     private final CommunicationService communicationService;
     private final CommandService commandService;
     private final IOService ioService;
+    private final TodoListDao todoListDao;
 
     public Main() {
         this.ioService = new IOServiceImpl();
         this.communicationService = new CommunicationServiceImpl();
-        this.commandService = new CommandServiceImpl(communicationService, this.ioService);
+        this.todoListDao = new TodoListDaoImpl();
+
+        this.commandService = new CommandServiceImpl(todoListDao, communicationService, this.ioService);
     }
 
-    public Main(CommunicationService communicationService, CommandService commandService, IOService ioService) {
+    public Main(CommunicationService communicationService, CommandService commandService, IOService ioService, TodoListDao todoListDao) {
         this.communicationService = communicationService;
         this.commandService = commandService;
         this.ioService = ioService;
+        this.todoListDao = todoListDao;
     }
 
     public static void main(String[] args) {
         Main main = new Main();
-        ApplicationContext.todoList = new TodoList();
+        main.todoListDao.save(new TodoList());
         while (true) {
             main.runTodoListProgram();
         }
