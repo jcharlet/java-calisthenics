@@ -6,7 +6,7 @@ import calisthenics.todolist.model.TodoList;
 /**
  * Created by jcharlet on 28/07/16.
  */
-public class TodoListDaoImpl implements TodoListDao {
+public class MemoryTodoListDaoImpl implements TodoListDao {
 
     static private TodoList todoList;
 

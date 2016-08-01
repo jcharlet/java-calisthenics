@@ -17,6 +17,10 @@ public class TodoList {
         this.tasks.add(task);
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("TodoList{");

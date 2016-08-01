@@ -1,5 +1,5 @@
 import calisthenics.todolist.dao.TodoListDao;
-import calisthenics.todolist.dao.impl.TodoListDaoImpl;
+import calisthenics.todolist.dao.impl.MemoryTodoListDaoImpl;
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
@@ -27,7 +27,7 @@ public class CommandServiceTest {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        TodoListDao todoListDao = new TodoListDaoImpl();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with a not empty todo list
@@ -56,7 +56,7 @@ public class CommandServiceTest {
         //GIVEN the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        TodoListDao todoListDao = new TodoListDaoImpl();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with our stub prepared
@@ -88,7 +88,7 @@ public class CommandServiceTest {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        TodoListDao todoListDao = new TodoListDaoImpl();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         // with a todo list initialized
@@ -118,7 +118,7 @@ public class CommandServiceTest {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         IOService ioService = new IOServiceStub();
-        TodoListDao todoListDao = new TodoListDaoImpl();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         // with no todo list initialized
@@ -148,11 +148,11 @@ public class CommandServiceTest {
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
         //FIXME ioservice should be tested somewhere else, we should only use stubs here
         IOService ioService = new IOServiceImpl();
-        TodoListDao todoListDao = new TodoListDaoImpl();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with our stub prepared
-        communicationServiceStub.stubInputMessage = "src/test/resources/todolist.txt";
+        communicationServiceStub.stubInputMessage = "src/test/resources/todolistToImport.txt";
 
         // and one empty todo list was created
         // with a todo list initialized

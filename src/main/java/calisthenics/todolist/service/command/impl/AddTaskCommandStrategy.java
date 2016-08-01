@@ -1,7 +1,6 @@
 package calisthenics.todolist.service.command.impl;
 
 import calisthenics.todolist.dao.TodoListDao;
-import calisthenics.todolist.model.ApplicationContext;
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.communication.Message;
@@ -22,17 +21,17 @@ public class AddTaskCommandStrategy extends CommandStrategy {
 
     @Override
     public void executeCommand() {
-        if (ApplicationContext.todoList == null) {
+        TodoList todoList = todoListDao.get();
+        if (todoList == null) {
             communicationService.tellUser(new Message("no todo list created yet"));
         }
         this.communicationService.tellUser(new Message("Which is the task name?"));
         Message taskName = communicationService.getUserInput();
         Task testTask = new Task(taskName.text);
 
-        TodoList todoList = todoListDao.get();
         todoList.addTask(testTask);
         todoListDao.save(todoList);
 
-        communicationService.tellUser(new Message(ApplicationContext.todoList.toString()));
+        communicationService.tellUser(new Message(todoList.toString()));
     }
 }

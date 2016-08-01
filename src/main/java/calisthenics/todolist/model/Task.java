@@ -10,6 +10,10 @@ public class Task {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Task{");

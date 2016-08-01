@@ -1,7 +1,7 @@
 package calisthenics.todolist;
 
 import calisthenics.todolist.dao.TodoListDao;
-import calisthenics.todolist.dao.impl.TodoListDaoImpl;
+import calisthenics.todolist.dao.impl.MemoryTodoListDaoImpl;
 import calisthenics.todolist.service.CommandService;
 import calisthenics.todolist.service.CommunicationService;
 import calisthenics.todolist.service.IOService;
@@ -21,7 +21,8 @@ public class ApplicationContext {
     public ApplicationContext() {
         this.ioService = new IOServiceImpl();
         this.communicationService = new CommunicationServiceImpl();
-        this.todoListDao = new TodoListDaoImpl();
+        this.todoListDao = new MemoryTodoListDaoImpl();
+//        this.todoListDao = new FileTodoListDaoImpl();
 
         this.commandService = new CommandServiceImpl(todoListDao, communicationService, this.ioService);
     }
