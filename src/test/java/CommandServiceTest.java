@@ -15,12 +15,12 @@ import stubs.IOServiceStub;
 public class CommandServiceTest {
 
     public static void main(String[] args) {
-        CommandServiceTest main = new CommandServiceTest();
-        main.testCreateNewList();
-        main.testAddTaskToList();
-        main.testGetHelp();
-        main.testShowTodoList();
-        main.testImportTodoListFromFile();
+        CommandServiceTest testRunner = new CommandServiceTest();
+        testRunner.testCreateNewList();
+        testRunner.testAddTaskToList();
+        testRunner.testGetHelp();
+        testRunner.testShowTodoList();
+        testRunner.testImportTodoListFromFile();
     }
 
     private void testCreateNewList() {
