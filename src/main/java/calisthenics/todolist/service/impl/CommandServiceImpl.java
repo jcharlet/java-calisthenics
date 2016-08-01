@@ -12,6 +12,7 @@ import calisthenics.todolist.service.command.impl.*;
 /**
  * Created by jcharlet on 18/07/16.
  */
+//TODO provide a way to change configuration and store in memory or on disk on demand
 public class CommandServiceImpl implements CommandService {
 
     private final CommunicationService communicationService;

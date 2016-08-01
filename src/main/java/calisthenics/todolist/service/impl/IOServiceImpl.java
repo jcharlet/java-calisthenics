@@ -12,6 +12,7 @@ import java.util.List;
 /**
  * Created by jcharlet on 27/07/16.
  */
+//FIXME this should move now to the dao layer, but how to merge it with todolistDao implementations?
 public class IOServiceImpl implements IOService {
     @Override
     public TodoList importTodoListFromFile(String filePath) throws IOException {
