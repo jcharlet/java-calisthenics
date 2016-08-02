@@ -9,6 +9,9 @@ import calisthenics.todolist.service.IOService;
 import calisthenics.todolist.service.command.CommandStrategy;
 import calisthenics.todolist.service.command.impl.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by jcharlet on 18/07/16.
  */
@@ -19,11 +22,19 @@ public class CommandServiceImpl implements CommandService {
     private final IOService ioService;
     private final TodoListDao todoListDao;
 
+    private final Map<UserCommand,CommandStrategy> mapOfCommandStrategies;
 
     public CommandServiceImpl(TodoListDao todoListDao, CommunicationService communicationService, IOService ioService) {
         this.todoListDao = todoListDao;
         this.communicationService = communicationService;
         this.ioService = ioService;
+
+        mapOfCommandStrategies = new HashMap<>();
+        mapOfCommandStrategies.put(UserCommand.create, new CreateCommandStrategy(todoListDao));
+        mapOfCommandStrategies.put(UserCommand.add, new AddTaskCommandStrategy(todoListDao,communicationService));
+        mapOfCommandStrategies.put(UserCommand.show, new ShowCommandStragegy(todoListDao,communicationService));
+        mapOfCommandStrategies.put(UserCommand.importFile, new ImportFileCommandStragegy(todoListDao,communicationService, ioService));
+        mapOfCommandStrategies.put(UserCommand.help, new ShowHelpCommandStrategy(todoListDao,communicationService));
     }
 
 
@@ -42,25 +53,7 @@ public class CommandServiceImpl implements CommandService {
 
     @Override
     public void executeUserCommand(UserCommand command) {
-        CommandStrategy commandStrategy;
-        switch (command) {
-            case create:
-                commandStrategy = new CreateCommandStrategy(todoListDao);
-                break;
-            case add:
-                commandStrategy = new AddTaskCommandStrategy(todoListDao,communicationService);
-                break;
-            case show:
-                commandStrategy = new ShowCommandStragegy(todoListDao,communicationService);
-                break;
-            case importFile:
-                commandStrategy = new ImportFileCommandStragegy(todoListDao,communicationService, ioService);
-                break;
-            case help:
-            default:
-                commandStrategy = new ShowHelpCommandStrategy(todoListDao,communicationService);
-                break;
-        }
+        CommandStrategy commandStrategy = mapOfCommandStrategies.get(command);
         commandStrategy.executeCommand();
     }
 
