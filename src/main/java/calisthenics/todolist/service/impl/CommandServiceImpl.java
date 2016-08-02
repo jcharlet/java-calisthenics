@@ -19,6 +19,7 @@ public class CommandServiceImpl implements CommandService {
     private final IOService ioService;
     private final TodoListDao todoListDao;
 
+
     public CommandServiceImpl(TodoListDao todoListDao, CommunicationService communicationService, IOService ioService) {
         this.todoListDao = todoListDao;
         this.communicationService = communicationService;
