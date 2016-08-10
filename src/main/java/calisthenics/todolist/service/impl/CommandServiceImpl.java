@@ -35,6 +35,7 @@ public class CommandServiceImpl implements CommandService {
         mapOfCommandStrategies.put(UserCommand.show, new ShowCommandStragegy(todoListDao,communicationService));
         mapOfCommandStrategies.put(UserCommand.importFile, new ImportFileCommandStragegy(todoListDao,communicationService, ioService));
         mapOfCommandStrategies.put(UserCommand.help, new ShowHelpCommandStrategy(todoListDao,communicationService));
+        mapOfCommandStrategies.put(UserCommand.toggleStatus, new ToggleStatusCommandStrategy(todoListDao,communicationService));
     }
 
 

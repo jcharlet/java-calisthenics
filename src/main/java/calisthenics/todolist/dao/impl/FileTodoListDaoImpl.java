@@ -30,7 +30,13 @@ public class FileTodoListDaoImpl implements TodoListDao {
 
         TodoList importedTodoList = new TodoList();
         for (String line : fileLines) {
-            importedTodoList.addTask(new Task(line));
+            final String[] fields = line.split(";");
+            if(fields.length==1){
+                importedTodoList.addTask(new Task(fields[0]));
+            }
+            if(fields.length==2){
+                importedTodoList.addTask(new Task(fields[0],Boolean.valueOf(fields[1])));
+            }
         }
         return importedTodoList;
     }
@@ -43,6 +49,8 @@ public class FileTodoListDaoImpl implements TodoListDao {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             for (Task task : todoList.getTasks()) {
                 writer.write(task.getName());
+                writer.write(";");
+                writer.write(String.valueOf(task.isDone()));
                 writer.newLine();
             }
             writer.close();

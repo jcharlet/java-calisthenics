@@ -21,6 +21,8 @@ public class CommandServiceTest {
         testRunner.testGetHelp();
         testRunner.testShowTodoList();
         testRunner.testImportTodoListFromFile();
+        testRunner.testToggleStatusWithValidTaskNumber();
+        testRunner.testToggleStatusWithInvalidTaskNumber();
     }
 
     private void testCreateNewList() {
@@ -30,7 +32,7 @@ public class CommandServiceTest {
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
-        //with a not empty todo list
+        //with a not empty to-do list
         TodoList initTodoList = new TodoList();
         initTodoList.addTask(new Task("test"));
         todoListDao.save(initTodoList);
@@ -39,11 +41,11 @@ public class CommandServiceTest {
         TodoList expectedTodoList = new TodoList();
         final String expectedOutput = expectedTodoList.toString();
 
-        // when I ask to create a todo list
+        // when I ask to create a to-do list
         commandService.executeUserCommand(UserCommand.create);
         final TodoList todoList = todoListDao.get();
 
-        // todo list is returned with a test task
+        // to-do list is returned with a test task
 
         if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testCreateNewList OK");
@@ -60,9 +62,9 @@ public class CommandServiceTest {
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with our stub prepared
-        communicationServiceStub.stubInputMessage = "test";
+        communicationServiceStub.stubInputMessage.add("test");
 
-        // and one empty todo list was created
+        // and one empty to-do list was created
         todoListDao.save(new TodoList());
 
         //and the expected result
@@ -75,7 +77,7 @@ public class CommandServiceTest {
         commandService.executeUserCommand(UserCommand.add);
         final TodoList todoList = todoListDao.get();
 
-        // THEN todo list is returned with a test task
+        // THEN to-do list is returned with a test task
 
         if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testAddTaskToList OK");
@@ -91,7 +93,7 @@ public class CommandServiceTest {
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
-        // with a todo list initialized
+        // with a to-do list initialized
         TodoList initTodoList = new TodoList();
         initTodoList.addTask(new Task("test"));
         todoListDao.save(initTodoList);
@@ -105,9 +107,9 @@ public class CommandServiceTest {
         commandService.executeUserCommand(UserCommand.show);
         final TodoList todoList = todoListDao.get();
 
-        // todo list is returned with a test task
+        // to-do list is returned with a test task
 
-        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && todoList.toString().equals(expectedTodoList.toString())) {
+        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage.poll()) && todoList.toString().equals(expectedTodoList.toString())) {
             System.out.println("testShowTodoList OK");
         } else {
             throw new IllegalStateException("testShowTodoList: not the expected output: " + communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutput);
@@ -121,7 +123,7 @@ public class CommandServiceTest {
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
-        // with no todo list initialized
+        // with no to-do list initialized
         todoListDao.save(null);
 
         //and the expected result
@@ -132,11 +134,12 @@ public class CommandServiceTest {
 
         // when I ask to get help
         commandService.executeUserCommand(UserCommand.help);
-        final TodoList todoList = todoListDao.get();
 
-        // todo list is returned with a test task
+        // We introduce the list of commands
+//        communicationServiceStub.stubOutputMessage.poll();
 
-        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage) && todoList == null) {
+        // then the list of commands is returned
+        if (expectedOutput.equals(communicationServiceStub.stubOutputMessage.getLast())) {
             System.out.println("testGetHelp OK");
         } else {
             throw new IllegalStateException("get help: not the expected output: " + communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutput);
@@ -152,10 +155,10 @@ public class CommandServiceTest {
         final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
 
         //with our stub prepared
-        communicationServiceStub.stubInputMessage = "src/test/resources/todolistToImport.txt";
+        communicationServiceStub.stubInputMessage.add("src/test/resources/todolistToImport.txt");
 
-        // and one empty todo list was created
-        // with a todo list initialized
+        // and one empty to-do list was created
+        // with a to-do list initialized
         todoListDao.save(new TodoList());
 
         //and the expected result
@@ -168,12 +171,92 @@ public class CommandServiceTest {
         commandService.executeUserCommand(UserCommand.importFile);
         final TodoList todoList = todoListDao.get();
 
-        // THEN todo list is returned with a test task
+        // THEN to-do list is returned with a test task
 
         if (expectedOutput.equals(todoList.toString())) {
             System.out.println("testImportTodoListFromFile OK");
         } else {
             throw new IllegalStateException("testImportTodoListFromFile: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
         }
+    }
+
+    private void testToggleStatusWithValidTaskNumber() {
+        //GIVEN the program started
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        IOService ioService = new IOServiceStub();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+
+        //with our user message prepared, to ask for the right task number
+        communicationServiceStub.stubInputMessage.add("0");
+
+        // with a to-do list initialized
+        TodoList initTodoList = new TodoList();
+        initTodoList.addTask(new Task("taskToComplete"));
+        initTodoList.addTask(new Task("taskNeverCompleted"));
+        todoListDao.save(initTodoList);
+
+        //and the expected result: the task test is done
+        final Task taskToComplete = new Task("taskToComplete", true);
+        final Task taskNeverCompleted = new Task("taskNeverCompleted");
+        TodoList expectedTodoList = new TodoList();
+        expectedTodoList.addTask(taskToComplete);
+        expectedTodoList.addTask(taskNeverCompleted);
+        final String expectedOutput = expectedTodoList.toString();
+
+        // WHEN I ask to add a task
+        commandService.executeUserCommand(UserCommand.toggleStatus);
+        final TodoList todoList = todoListDao.get();
+
+        // THEN to-do list is returned with a test task
+
+        if (expectedOutput.equals(todoList.toString())) {
+            System.out.println("testToggleStatusWithValidTaskNumber OK");
+        } else {
+            throw new IllegalStateException("add task to list: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
+        }
+    }
+
+
+    private void testToggleStatusWithInvalidTaskNumber() {
+        //GIVEN the program started
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        IOService ioService = new IOServiceStub();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+
+        //with our user message prepared, to ask for some invalid task number
+        communicationServiceStub.stubInputMessage.add("2");
+        //with our user message prepared, to ask after for one valid task number
+        communicationServiceStub.stubInputMessage.add("1");
+
+        // with a to-do list initialized
+        TodoList initTodoList = new TodoList();
+        initTodoList.addTask(new Task("taskToComplete"));
+        initTodoList.addTask(new Task("taskNeverCompleted"));
+        todoListDao.save(initTodoList);
+
+        //and the last expected message: ask again for a number to provide
+
+        // WHEN I ask to add a task
+        commandService.executeUserCommand(UserCommand.toggleStatus);
+
+        // THEN the first task is assigned the number 0
+        String expectedOutputMessage = "[0] " + initTodoList.getTasks().get(0).toString();
+        if (!communicationServiceStub.stubOutputMessage.pollFirst().contains(expectedOutputMessage)) {
+            throw new IllegalStateException("testToggleStatusWithInvalidTaskNumber: not the expected output: " +
+                    communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutputMessage);
+        }
+
+        // AND we ask the user to provide a task
+        communicationServiceStub.stubOutputMessage.pollFirst();
+
+        // AND we return to the user that we could not find his invalid task
+        expectedOutputMessage = "There is no such task.";
+        if (!communicationServiceStub.stubOutputMessage.pollFirst().contains(expectedOutputMessage)) {
+            throw new IllegalStateException("testToggleStatusWithInvalidTaskNumber: not the expected output: " +
+                    communicationServiceStub.stubOutputMessage + " instead of: " + expectedOutputMessage);
+        }
+        System.out.println("testToggleStatusWithInvalidTaskNumber OK");
     }
 }

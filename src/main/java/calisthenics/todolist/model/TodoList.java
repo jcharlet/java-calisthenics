@@ -21,6 +21,10 @@ public class TodoList {
         return tasks;
     }
 
+    public int getTasksSize(){
+        return tasks.size();
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("TodoList{");

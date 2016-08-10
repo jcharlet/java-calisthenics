@@ -8,7 +8,7 @@ import calisthenics.todolist.service.CommandService;
 import calisthenics.todolist.service.CommunicationService;
 
 /**
- * write a CLI which enables you to deal with a todo list
+ * write a CLI which enables you to deal with a to-do list
  * <h2>rules</h2>
  * <ol>
  * <li>Only One Level Of Indentation Per Method</li>
@@ -31,10 +31,10 @@ import calisthenics.todolist.service.CommunicationService;
  * </ol>
  * <h2>US</h2>
  * <h3>Core User Stories</h3>
- * As a user I can create a todo list<br/>
- * As a user I can add tasks to the todo list<br/>
+ * As a user I can create a to-do list<br/>
+ * As a user I can add tasks to the to-do list<br/>
  * As a user I can see all the tasks in a list<br/>
- * As a user I can manipulate the todo list through a menu<br/>
+ * As a user I can manipulate the to-do list through a menu<br/>
  * <h3>Secondary User Stories</h3>
  * As a user I can open a list from a text file<br/>
  * As a user I can save a list to a text file<br/>

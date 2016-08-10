@@ -23,7 +23,7 @@ public class AddTaskCommandStrategy extends CommandStrategy {
     public void executeCommand() {
         TodoList todoList = todoListDao.get();
         if (todoList == null) {
-            communicationService.tellUser(new Message("no todo list created yet"));
+            communicationService.tellUser(new Message("no to-do list created yet"));
         }
         this.communicationService.tellUser(new Message("Which is the task name?"));
         Message taskName = communicationService.getUserInput();
