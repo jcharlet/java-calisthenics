@@ -4,6 +4,7 @@ import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
 import calisthenics.todolist.service.IOService;
+import calisthenics.todolist.service.command.impl.CreateCommandStrategy;
 import calisthenics.todolist.service.impl.CommandServiceImpl;
 import calisthenics.todolist.service.impl.IOServiceImpl;
 import stubs.CommunicationServiceStub;
@@ -17,6 +18,7 @@ public class CommandServiceTest {
     public static void main(String[] args) {
         CommandServiceTest testRunner = new CommandServiceTest();
         testRunner.testCreateNewList();
+        testRunner.testCreateNewHouseChoresList();
         testRunner.testAddTaskToList();
         testRunner.testGetHelp();
         testRunner.testShowTodoList();
@@ -41,6 +43,9 @@ public class CommandServiceTest {
         TodoList expectedTodoList = new TodoList();
         final String expectedOutput = expectedTodoList.toString();
 
+        //with our user message prepared, to ask for an empty todolist
+        communicationServiceStub.stubInputMessage.add(CreateCommandStrategy.TodoListCreationType.empty.name());
+
         // when I ask to create a to-do list
         commandService.executeUserCommand(UserCommand.create);
         final TodoList todoList = todoListDao.get();
@@ -51,6 +56,41 @@ public class CommandServiceTest {
             System.out.println("testCreateNewList OK");
         } else {
             throw new IllegalStateException("createNewList: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
+        }
+    }
+
+    private void testCreateNewHouseChoresList() {
+        //given the program started
+        CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
+        IOService ioService = new IOServiceStub();
+        TodoListDao todoListDao = new MemoryTodoListDaoImpl();
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+
+        //with a not empty to-do list
+        TodoList initTodoList = new TodoList();
+        initTodoList.addTask(new Task("test"));
+        todoListDao.save(initTodoList);
+
+        //and the expected result
+        TodoList expectedTodoList = new TodoList();
+        expectedTodoList.addTask(new Task("remove the dust"));
+        expectedTodoList.addTask(new Task("Vacuum the floor"));
+        expectedTodoList.addTask(new Task("wash the floor"));
+        final String expectedOutput = expectedTodoList.toString();
+
+        //with our user message prepared, to ask for an house chores todolist
+        communicationServiceStub.stubInputMessage.add(CreateCommandStrategy.TodoListCreationType.house_chores.name());
+
+        // when I ask to create a to-do list for house chores
+        commandService.executeUserCommand(UserCommand.create);
+        final TodoList todoList = todoListDao.get();
+
+        // to-do list is returned with a test task
+
+        if (expectedOutput.equals(todoList.toString())) {
+            System.out.println("testCreateNewHouseChoresList OK");
+        } else {
+            throw new IllegalStateException("testCreateNewHouseChoresList: not the expected output: " + todoList.toString() + " instead of: " + expectedOutput);
         }
     }
 

@@ -30,7 +30,7 @@ public class CommandServiceImpl implements CommandService {
         this.ioService = ioService;
 
         mapOfCommandStrategies = new HashMap<>();
-        mapOfCommandStrategies.put(UserCommand.create, new CreateCommandStrategy(todoListDao));
+        mapOfCommandStrategies.put(UserCommand.create, new CreateCommandStrategy(todoListDao, communicationService));
         mapOfCommandStrategies.put(UserCommand.add, new AddTaskCommandStrategy(todoListDao,communicationService));
         mapOfCommandStrategies.put(UserCommand.show, new ShowCommandStragegy(todoListDao,communicationService));
         mapOfCommandStrategies.put(UserCommand.importFile, new ImportFileCommandStragegy(todoListDao,communicationService, ioService));
