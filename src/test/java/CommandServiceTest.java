@@ -1,14 +1,14 @@
+import calisthenics.todolist.dao.TodoListImportInterface;
 import calisthenics.todolist.dao.TodoListDao;
+import calisthenics.todolist.dao.impl.FileTodoListDaoImpl;
 import calisthenics.todolist.dao.impl.MemoryTodoListDaoImpl;
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.command.UserCommand;
-import calisthenics.todolist.service.IOService;
 import calisthenics.todolist.service.command.impl.CreateCommandStrategy;
 import calisthenics.todolist.service.impl.CommandServiceImpl;
-import calisthenics.todolist.service.impl.IOServiceImpl;
 import stubs.CommunicationServiceStub;
-import stubs.IOServiceStub;
+import stubs.TodoListImportInterfaceStub;
 
 /**
  * Created by jcharlet on 18/07/16.
@@ -30,9 +30,9 @@ public class CommandServiceTest {
     private void testCreateNewList() {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        IOService ioService = new IOServiceStub();
+        TodoListImportInterface todoListImportInterface = new TodoListImportInterfaceStub();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         //with a not empty to-do list
         TodoList initTodoList = new TodoList();
@@ -62,9 +62,9 @@ public class CommandServiceTest {
     private void testCreateNewHouseChoresList() {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        IOService ioService = new IOServiceStub();
+        TodoListImportInterface todoListImportInterface = new TodoListImportInterfaceStub();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         //with a not empty to-do list
         TodoList initTodoList = new TodoList();
@@ -97,9 +97,9 @@ public class CommandServiceTest {
     private void testAddTaskToList() {
         //GIVEN the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        IOService ioService = new IOServiceStub();
+        TodoListImportInterface todoListImportInterface = new TodoListImportInterfaceStub();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         //with our stub prepared
         communicationServiceStub.stubInputMessage.add("test");
@@ -129,9 +129,9 @@ public class CommandServiceTest {
     private void testShowTodoList() {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        IOService ioService = new IOServiceStub();
+        TodoListImportInterface todoListImportInterface = new TodoListImportInterfaceStub();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         // with a to-do list initialized
         TodoList initTodoList = new TodoList();
@@ -159,9 +159,9 @@ public class CommandServiceTest {
     private void testGetHelp() {
         //given the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        IOService ioService = new IOServiceStub();
+        TodoListImportInterface todoListImportInterface = new TodoListImportInterfaceStub();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         // with no to-do list initialized
         todoListDao.save(null);
@@ -189,10 +189,10 @@ public class CommandServiceTest {
     private void testImportTodoListFromFile() {
         //GIVEN the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        //FIXME ioservice should be tested somewhere else, we should only use stubs here
-        IOService ioService = new IOServiceImpl();
+        //FIXME todoListImportInterface should be tested somewhere else, we should only use stubs here
+        TodoListImportInterface todoListImportInterface = new FileTodoListDaoImpl();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         //with our stub prepared
         communicationServiceStub.stubInputMessage.add("src/test/resources/todolistToImport.txt");
@@ -223,9 +223,9 @@ public class CommandServiceTest {
     private void testToggleStatusWithValidTaskNumber() {
         //GIVEN the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        IOService ioService = new IOServiceStub();
+        TodoListImportInterface todoListImportInterface = new TodoListImportInterfaceStub();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         //with our user message prepared, to ask for the right task number
         communicationServiceStub.stubInputMessage.add("0");
@@ -261,9 +261,9 @@ public class CommandServiceTest {
     private void testToggleStatusWithInvalidTaskNumber() {
         //GIVEN the program started
         CommunicationServiceStub communicationServiceStub = new CommunicationServiceStub();
-        IOService ioService = new IOServiceStub();
+        TodoListImportInterface todoListImportInterface = new TodoListImportInterfaceStub();
         TodoListDao todoListDao = new MemoryTodoListDaoImpl();
-        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, ioService);
+        final CommandServiceImpl commandService = new CommandServiceImpl(todoListDao, communicationServiceStub, todoListImportInterface);
 
         //with our user message prepared, to ask for some invalid task number
         communicationServiceStub.stubInputMessage.add("2");

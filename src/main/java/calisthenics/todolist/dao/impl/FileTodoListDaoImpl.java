@@ -1,5 +1,6 @@
 package calisthenics.todolist.dao.impl;
 
+import calisthenics.todolist.dao.TodoListImportInterface;
 import calisthenics.todolist.dao.TodoListDao;
 import calisthenics.todolist.model.Task;
 import calisthenics.todolist.model.TodoList;
@@ -15,30 +16,13 @@ import java.util.List;
 /**
  * Created by jcharlet on 28/07/16.
  */
-public class FileTodoListDaoImpl implements TodoListDao {
+public class FileTodoListDaoImpl implements TodoListDao, TodoListImportInterface {
 
-    static private String filePath = "todolist.txt";
+    static private String filePath = "/tmp/todolist.txt";
 
     @Override
     public TodoList get() {
-        final List<String> fileLines;
-        try {
-            fileLines = Files.readAllLines(Paths.get(filePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        TodoList importedTodoList = new TodoList();
-        for (String line : fileLines) {
-            final String[] fields = line.split(";");
-            if(fields.length==1){
-                importedTodoList.addTask(new Task(fields[0]));
-            }
-            if(fields.length==2){
-                importedTodoList.addTask(new Task(fields[0],Boolean.valueOf(fields[1])));
-            }
-        }
-        return importedTodoList;
+        return importFromFile(filePath);
     }
 
     @Override
@@ -58,5 +42,27 @@ public class FileTodoListDaoImpl implements TodoListDao {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public TodoList importFromFile(String filePath) {
+        final List<String> fileLines;
+        try {
+            fileLines = Files.readAllLines(Paths.get(filePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        TodoList importedTodoList = new TodoList();
+        for (String line : fileLines) {
+            final String[] fields = line.split(";");
+            if (fields.length == 1) {
+                importedTodoList.addTask(new Task(fields[0]));
+            }
+            if (fields.length == 2) {
+                importedTodoList.addTask(new Task(fields[0], Boolean.valueOf(fields[1])));
+            }
+        }
+        return importedTodoList;
     }
 }

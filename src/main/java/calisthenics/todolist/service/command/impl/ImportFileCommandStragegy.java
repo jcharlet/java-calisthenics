@@ -1,25 +1,23 @@
 package calisthenics.todolist.service.command.impl;
 
 import calisthenics.todolist.dao.TodoListDao;
+import calisthenics.todolist.dao.TodoListImportInterface;
 import calisthenics.todolist.model.TodoList;
 import calisthenics.todolist.model.communication.Message;
 import calisthenics.todolist.service.CommunicationService;
-import calisthenics.todolist.service.IOService;
 import calisthenics.todolist.service.command.CommandStrategy;
-
-import java.io.IOException;
 
 /**
  * Created by jcharlet on 27/07/16.
  */
 public class ImportFileCommandStragegy extends CommandStrategy {
     private final CommunicationService communicationService;
-    private final IOService ioService;
+    private final TodoListImportInterface todoListImportInterface;
 
-    public ImportFileCommandStragegy(TodoListDao todoListDao, CommunicationService communicationService, IOService ioService) {
+    public ImportFileCommandStragegy(TodoListDao todoListDao, CommunicationService communicationService, TodoListImportInterface todoListImportInterface) {
         super(todoListDao);
         this.communicationService = communicationService;
-        this.ioService = ioService;
+        this.todoListImportInterface = todoListImportInterface;
     }
 
     @Override
@@ -29,9 +27,9 @@ public class ImportFileCommandStragegy extends CommandStrategy {
         final String filePath = userInputFilePath.text;
         final TodoList todoList;
         try {
-            todoList = ioService.importTodoListFromFile(filePath);
+            todoList = todoListImportInterface.importFromFile(filePath);
             todoListDao.save(todoList);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             communicationService.tellUser(new Message("file with path " + filePath + " does not exist"));
             return;
         }
